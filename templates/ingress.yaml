@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled -}}
+{{- if .Values.ingress.enabled }}
 {{- $fullName := include "spring-petclinic.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 {{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -29,8 +29,8 @@ spec:
   {{- end }}
   rules:
     {{- range .Values.ingress.hosts }}
+    {{- if .paths }}
     - host: {{ .host | quote }}
-      {{- if .paths }}
       http:
         paths:
           {{- range .paths }}
@@ -39,8 +39,9 @@ spec:
             backend:
               service:
                 name: {{ $fullName }}
-                port: 
+                port:
                   number: {{ $svcPort }}
           {{- end }}
     {{- end }}
-  {{- end }}
+    {{- end }}
+{{- end }}

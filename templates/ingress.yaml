@@ -1,20 +1,3 @@
-{{- if .Values.ingress.enabled }}
-{{- $fullName := include "spring-petclinic.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
-kind: Ingress
-metadata:
-  name: {{ $fullName }}
-  labels:
-    {{- include "spring-petclinic.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
 spec:
   ingressClassName: nginx
   {{- if .Values.ingress.tls }}
@@ -27,6 +10,8 @@ spec:
       secretName: {{ .secretName }}
     {{- end }}
   {{- end }}
+
+  {{- if and .Values.ingress.hosts (gt (len .Values.ingress.hosts) 0) }}
   rules:
     {{- range .Values.ingress.hosts }}
     {{- if .paths }}
@@ -44,4 +29,10 @@ spec:
           {{- end }}
     {{- end }}
     {{- end }}
-{{- end }}
+  {{- else }}
+  defaultBackend:
+    service:
+      name: {{ $fullName }}
+      port:
+        number: {{ $svcPort }}
+  {{- end }}

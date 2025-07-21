@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: binblee/springboot-helm-chart
+  repository: susesamples/spring-petclinic-demo
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "graalvm-22.3-java17"
+  tag: "v1.0.42"
 
 imagePullSecrets: []
 nameOverride: ""
